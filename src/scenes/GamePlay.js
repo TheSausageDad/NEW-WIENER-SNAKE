@@ -7,18 +7,22 @@ export default class GamePlay extends Phaser.Scene {
   }
 
   init() {
-    // Grid settings
-    this.gridSize = 32;
-    this.gridWidth = 18;
-    this.gridHeight = 18;
-    this.gridOffsetY = 40; // Offset for score area
+    // Grid settings - optimized to fill screen
+    this.gridSize = 46;
+    this.gridWidth = 15;
+    this.gridHeight = 15;
+
+    // Mobile detection for grid offset
+    const isMobile = this.sys.game.device.os.android || this.sys.game.device.os.iOS || this.sys.game.device.os.iPad || this.sys.game.device.os.iPhone;
+    this.gridOffsetY = isMobile ? 180 : 120; // Offset for score area
     this.gridOffsetX = 0; // Will be set in createGrid()
 
     // Snake settings
     this.snake = [];
     this.snakeDirection = { x: 1, y: 0 };
     this.nextDirection = { x: 1, y: 0 };
-    this.moveDelay = 150; // milliseconds
+    this.moveDelayHorizontal = 150; // milliseconds for left/right
+    this.moveDelayVertical = 120; // milliseconds for up/down (faster)
     this.moveTimer = 0; // Accumulator for delta time
 
     // Game state
@@ -30,13 +34,15 @@ export default class GamePlay extends Phaser.Scene {
   create() {
     const { width, height } = this.cameras.main;
 
-    // Score text with retro styling - centered above grid
-    this.scoreText = this.add.text(width / 2, 20, 'SCORE: 0', {
-      fontSize: '16px',
+    // Score text with retro styling - centered above grid, adjusted for mobile
+    const isMobile = this.sys.game.device.os.android || this.sys.game.device.os.iOS || this.sys.game.device.os.iPad || this.sys.game.device.os.iPhone;
+    const scoreY = isMobile ? 40 : 30;
+    this.scoreText = this.add.text(width / 2, scoreY, 'SCORE: 0', {
+      fontSize: isMobile ? '28px' : '20px',
       fontFamily: '"Press Start 2P", monospace',
       color: '#faca79',
       backgroundColor: '#754938',
-      padding: { x: 8, y: 6 }
+      padding: { x: 12, y: 8 }
     }).setOrigin(0.5);
 
     // Create grid background (offset down by 40px)
@@ -80,58 +86,63 @@ export default class GamePlay extends Phaser.Scene {
     // Pause the game
     this.gameOver = true; // Temporarily set to prevent snake movement
 
+    // Mobile detection
+    const isMobile = this.sys.game.device.os.android || this.sys.game.device.os.iOS || this.sys.game.device.os.iPad || this.sys.game.device.os.iPhone;
+
     // Semi-transparent overlay
     const overlay = this.add.graphics();
     overlay.fillStyle(0x000000, 0.8);
     overlay.fillRect(0, 0, width, height);
 
-    // Popup background
+    // Popup background - bigger on mobile
+    const popupWidth = isMobile ? 600 : 500;
+    const popupHeight = isMobile ? 500 : 300;
     const popupBg = this.add.graphics();
     popupBg.fillStyle(0x754938, 1);
-    popupBg.fillRoundedRect(width / 2 - 250, height / 2 - 150, 500, 300, 8);
+    popupBg.fillRoundedRect(width / 2 - popupWidth / 2, height / 2 - popupHeight / 2, popupWidth, popupHeight, 8);
     popupBg.lineStyle(4, 0xfaca79, 1);
-    popupBg.strokeRoundedRect(width / 2 - 250, height / 2 - 150, 500, 300, 8);
+    popupBg.strokeRoundedRect(width / 2 - popupWidth / 2, height / 2 - popupHeight / 2, popupWidth, popupHeight, 8);
 
-    // Title
-    const title = this.add.text(width / 2, height / 2 - 110, 'HOW TO PLAY', {
-      fontSize: '20px',
+    // Title - bigger on mobile
+    const title = this.add.text(width / 2, height / 2 - (isMobile ? 180 : 110), 'HOW TO PLAY', {
+      fontSize: isMobile ? '32px' : '20px',
       fontFamily: '"Press Start 2P", monospace',
       color: '#faca79'
     }).setOrigin(0.5);
 
     // Instructions for desktop
-    const desktopLabel = this.add.text(width / 2, height / 2 - 60, 'DESKTOP:', {
-      fontSize: '14px',
+    const desktopLabel = this.add.text(width / 2, height / 2 - (isMobile ? 100 : 60), 'DESKTOP:', {
+      fontSize: isMobile ? '24px' : '14px',
       fontFamily: '"Press Start 2P", monospace',
       color: '#f47d59'
     }).setOrigin(0.5);
 
-    const desktopText = this.add.text(width / 2, height / 2 - 30, 'Arrow Keys or WASD', {
-      fontSize: '12px',
+    const desktopText = this.add.text(width / 2, height / 2 - (isMobile ? 50 : 30), 'Arrow Keys or WASD', {
+      fontSize: isMobile ? '20px' : '12px',
       fontFamily: '"Press Start 2P", monospace',
       color: '#faca79'
     }).setOrigin(0.5);
 
     // Instructions for mobile
-    const mobileLabel = this.add.text(width / 2, height / 2 + 10, 'MOBILE:', {
-      fontSize: '14px',
+    const mobileLabel = this.add.text(width / 2, height / 2 + (isMobile ? 20 : 10), 'MOBILE:', {
+      fontSize: isMobile ? '24px' : '14px',
       fontFamily: '"Press Start 2P", monospace',
       color: '#f47d59'
     }).setOrigin(0.5);
 
-    const mobileText = this.add.text(width / 2, height / 2 + 40, 'Swipe to Control', {
-      fontSize: '12px',
+    const mobileText = this.add.text(width / 2, height / 2 + (isMobile ? 70 : 40), 'Swipe to Control', {
+      fontSize: isMobile ? '20px' : '12px',
       fontFamily: '"Press Start 2P", monospace',
       color: '#faca79'
     }).setOrigin(0.5);
 
-    // Start button
-    const startButton = this.add.text(width / 2, height / 2 + 100, 'START', {
-      fontSize: '18px',
+    // Start button - bigger on mobile
+    const startButton = this.add.text(width / 2, height / 2 + (isMobile ? 170 : 100), 'START', {
+      fontSize: isMobile ? '28px' : '18px',
       fontFamily: '"Press Start 2P", monospace',
       color: '#faca79',
       backgroundColor: '#dd5342',
-      padding: { x: 24, y: 14 }
+      padding: isMobile ? { x: 40, y: 22 } : { x: 24, y: 14 }
     }).setOrigin(0.5)
       .setInteractive({ useHandCursor: true })
       .on('pointerdown', () => {
@@ -158,11 +169,15 @@ export default class GamePlay extends Phaser.Scene {
   }
 
   createGrid() {
+    const { width, height } = this.cameras.main;
     const graphics = this.add.graphics();
-    const gridOffsetX = (640 - this.gridWidth * this.gridSize) / 2; // Center grid horizontally
+    const gridOffsetX = (width - this.gridWidth * this.gridSize) / 2; // Center grid horizontally
+    const isMobile = this.sys.game.device.os.android || this.sys.game.device.os.iOS || this.sys.game.device.os.iPad || this.sys.game.device.os.iPhone;
 
-    // Yellow grid lines for emphasis
-    graphics.lineStyle(1, 0xfaca79, 0.25);
+    // Yellow grid lines for emphasis - more visible on desktop
+    const gridOpacity = isMobile ? 0.25 : 0.4;
+    const gridLineWidth = isMobile ? 1 : 2;
+    graphics.lineStyle(gridLineWidth, 0xfaca79, gridOpacity);
 
     for (let x = 0; x <= this.gridWidth; x++) {
       graphics.moveTo(gridOffsetX + x * this.gridSize, this.gridOffsetY);
@@ -176,9 +191,12 @@ export default class GamePlay extends Phaser.Scene {
 
     graphics.strokePath();
 
-    // Add yellow border around grid
-    graphics.lineStyle(8, 0xfaca79, 1);
-    graphics.strokeRect(gridOffsetX, this.gridOffsetY, this.gridWidth * this.gridSize, this.gridHeight * this.gridSize);
+    // Add yellow border around grid - not on mobile
+    if (!isMobile) {
+      const borderThickness = 8;
+      graphics.lineStyle(borderThickness, 0xfaca79, 1);
+      graphics.strokeRect(gridOffsetX, this.gridOffsetY, this.gridWidth * this.gridSize, this.gridHeight * this.gridSize);
+    }
 
     // Store grid offset for use in other methods
     this.gridOffsetX = gridOffsetX;
@@ -242,11 +260,14 @@ export default class GamePlay extends Phaser.Scene {
     this.handleInput();
 
     // Move snake at intervals using delta time accumulator
-    // This ensures consistent movement regardless of frame rate
+    // Use different speeds for vertical vs horizontal movement
     this.moveTimer += delta;
 
-    if (this.moveTimer >= this.moveDelay) {
-      this.moveTimer -= this.moveDelay;
+    // Choose delay based on current direction
+    const currentDelay = this.snakeDirection.y !== 0 ? this.moveDelayVertical : this.moveDelayHorizontal;
+
+    if (this.moveTimer >= currentDelay) {
+      this.moveTimer -= currentDelay;
       this.moveSnake();
     }
   }
@@ -359,34 +380,35 @@ export default class GamePlay extends Phaser.Scene {
           6
         );
 
-        // Eyes
+        // Eyes - scaled to grid size
         this.snakeGraphics.fillStyle(0x754938, 1);
-        const eyeSize = 4;
-        const eyeY = segment.y * this.gridSize + 10 + this.gridOffsetY;
+        const eyeSize = Math.floor(this.gridSize / 8);
+        const eyeOffset1 = Math.floor(this.gridSize / 3);
+        const eyeOffset2 = Math.floor(this.gridSize * 2 / 3);
 
         // Draw eyes based on direction
         if (this.snakeDirection.x !== 0) {
-          // Horizontal movement - eyes on the side
+          // Horizontal movement - eyes on the side (vertically spaced)
           this.snakeGraphics.fillCircle(
-            this.gridOffsetX + segment.x * this.gridSize + 10,
-            eyeY,
+            this.gridOffsetX + segment.x * this.gridSize + eyeOffset1,
+            segment.y * this.gridSize + eyeOffset1 + this.gridOffsetY,
             eyeSize
           );
           this.snakeGraphics.fillCircle(
-            this.gridOffsetX + segment.x * this.gridSize + 10,
-            segment.y * this.gridSize + 22 + this.gridOffsetY,
+            this.gridOffsetX + segment.x * this.gridSize + eyeOffset1,
+            segment.y * this.gridSize + eyeOffset2 + this.gridOffsetY,
             eyeSize
           );
         } else {
-          // Vertical movement - eyes on top/bottom
+          // Vertical movement - eyes on top (horizontally spaced)
           this.snakeGraphics.fillCircle(
-            this.gridOffsetX + segment.x * this.gridSize + 10,
-            eyeY,
+            this.gridOffsetX + segment.x * this.gridSize + eyeOffset1,
+            segment.y * this.gridSize + eyeOffset1 + this.gridOffsetY,
             eyeSize
           );
           this.snakeGraphics.fillCircle(
-            this.gridOffsetX + segment.x * this.gridSize + 22,
-            eyeY,
+            this.gridOffsetX + segment.x * this.gridSize + eyeOffset2,
+            segment.y * this.gridSize + eyeOffset1 + this.gridOffsetY,
             eyeSize
           );
         }
@@ -444,8 +466,14 @@ export default class GamePlay extends Phaser.Scene {
     );
   }
 
-  async endGame() {
+  endGame() {
+    if (this.gameOver) return; // Prevent multiple calls
     this.gameOver = true;
+
+    console.log('Game Over! Score:', this.score);
+
+    // Shake camera immediately for fluid feel
+    this.cameras.main.shake(200, 0.01);
 
     // Update high score
     const highScore = parseInt(localStorage.getItem('wienerSnakeHighScore') || 0);
@@ -453,41 +481,44 @@ export default class GamePlay extends Phaser.Scene {
       localStorage.setItem('wienerSnakeHighScore', this.score.toString());
     }
 
-    // Submit score to leaderboard if score > 0
+    // Submit score to leaderboard in background (non-blocking)
     if (this.score > 0) {
-      try {
-        // Get player name from localStorage or generate one
-        let playerName = localStorage.getItem('wienerSnakePlayerName');
+      // Get player name from localStorage or generate one
+      let playerName = localStorage.getItem('wienerSnakePlayerName');
 
-        if (!playerName) {
-          // Generate a random player name
-          const adjectives = ['Hot', 'Cool', 'Super', 'Mega', 'Ultra', 'Epic', 'Wild', 'Crazy'];
-          const nouns = ['Dog', 'Sausage', 'Wiener', 'Link', 'Frank', 'Brat'];
-          playerName = `${adjectives[Math.floor(Math.random() * adjectives.length)]}${nouns[Math.floor(Math.random() * nouns.length)]}${Math.floor(Math.random() * 999)}`;
-          localStorage.setItem('wienerSnakePlayerName', playerName);
-        }
-
-        await supabase
-          .from('leaderboard')
-          .insert([
-            {
-              player_name: playerName,
-              score: this.score,
-              created_at: new Date().toISOString()
-            }
-          ]);
-      } catch (error) {
-        console.error('Error submitting score:', error);
-        // Continue even if submission fails
+      if (!playerName) {
+        // Generate a random player name
+        const adjectives = ['Hot', 'Cool', 'Super', 'Mega', 'Ultra', 'Epic', 'Wild', 'Crazy'];
+        const nouns = ['Dog', 'Sausage', 'Wiener', 'Link', 'Frank', 'Brat'];
+        playerName = `${adjectives[Math.floor(Math.random() * adjectives.length)]}${nouns[Math.floor(Math.random() * nouns.length)]}${Math.floor(Math.random() * 999)}`;
+        localStorage.setItem('wienerSnakePlayerName', playerName);
       }
+
+      // Submit without awaiting (fire and forget)
+      supabase
+        .from('leaderboard')
+        .insert([
+          {
+            player_name: playerName,
+            score: this.score,
+            created_at: new Date().toISOString()
+          }
+        ])
+        .then(() => {
+          console.log('Score submitted successfully');
+        })
+        .catch(error => {
+          console.error('Error submitting score:', error);
+          // Continue even if submission fails
+        });
     }
 
-    // Shake camera
-    this.cameras.main.shake(200, 0.01);
-
     // Transition to game over after a delay
-    this.time.delayedCall(500, () => {
-      this.scene.start('GameOver', { score: this.score });
+    const finalScore = this.score;
+    this.time.delayedCall(600, () => {
+      console.log('Transitioning to GameOver scene with score:', finalScore);
+      this.scene.stop('GamePlay');
+      this.scene.start('GameOver', { score: finalScore });
     });
   }
 }

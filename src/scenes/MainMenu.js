@@ -21,51 +21,65 @@ export default class MainMenu extends Phaser.Scene {
     // Get current player name
     this.currentPlayerName = localStorage.getItem('wienerSnakePlayerName') || 'Anonymous';
 
-    // Retro border decoration
+    // Retro border decoration - adjust for mobile
     const graphics = this.add.graphics();
-    graphics.lineStyle(4, 0xfaca79, 1);
-    graphics.strokeRect(20, 20, width - 40, height - 40);
+    const isMobile = this.sys.game.device.os.android || this.sys.game.device.os.iOS || this.sys.game.device.os.iPad || this.sys.game.device.os.iPhone;
+
+    if (!isMobile) {
+      const borderThickness = 8;
+      const borderPadding = 20;
+      graphics.lineStyle(borderThickness, 0xfaca79, 1);
+      graphics.strokeRect(borderPadding, borderPadding, width - (borderPadding * 2), height - (borderPadding * 2));
+    }
+
+    // Calculate responsive positions
+    const bannerY = height * 0.22;
+    const hiScoreY = height * 0.42;
+    const scoreY = height * 0.48;
+    const playerLabelY = height * 0.57;
+    const playerNameY = height * 0.60;
+    const playButtonY = height * 0.73;
+    const leaderboardButtonY = height * 0.84;
+    const changeNameButtonY = height * 0.93;
 
     // Banner image
-    const banner = this.add.image(width / 2, height / 3 - 10, 'banner');
+    const banner = this.add.image(width / 2, bannerY, 'banner');
     banner.setOrigin(0.5);
     // Scale banner to fit nicely
-    banner.setScale(0.45);
+    banner.setScale(0.65);
 
     // High Score with retro styling
     const highScore = localStorage.getItem('wienerSnakeHighScore') || 0;
-    this.add.text(width / 2, height / 2 + 30, `HI-SCORE`, {
-      fontSize: '36px',
+    this.add.text(width / 2, hiScoreY, `HI-SCORE`, {
+      fontSize: '64px',
       fontFamily: '"TF Funky Fusion Demo", cursive',
       color: '#faca79'
     }).setOrigin(0.5);
 
-    this.add.text(width / 2, height / 2 + 70, `${highScore}`, {
-      fontSize: '48px',
+    this.add.text(width / 2, scoreY, `${highScore}`, {
+      fontSize: '72px',
       fontFamily: '"Baristo", cursive',
       color: '#faca79'
     }).setOrigin(0.5);
 
     // Player name display (above play button)
-    this.add.text(width / 2, height / 2 + 140, 'PLAYER:', {
-      fontSize: '12px',
-      fontFamily: '"Press Start 2P", monospace',
+    this.add.text(width / 2, playerLabelY, 'PLAYER:', {
+      fontSize: '64px',
+      fontFamily: '"TF Funky Fusion Demo", cursive',
       color: '#faca79'
     }).setOrigin(0.5);
 
-    this.playerNameText = this.add.text(width / 2, height / 2 + 165, this.currentPlayerName, {
-      fontSize: '14px',
-      fontFamily: '"Press Start 2P", monospace',
-      color: '#f47d59'
-    }).setOrigin(0.5);
+    // Create container for player name with mixed fonts
+    this.playerNameContainer = this.add.container(width / 2, playerNameY);
+    this.renderPlayerName(this.currentPlayerName);
 
     // Play button with yellow
-    const playButton = this.add.text(width / 2, height * 2 / 3 + 50, 'PLAY', {
-      fontSize: '48px',
+    const playButton = this.add.text(width / 2, playButtonY, 'PLAY', {
+      fontSize: '64px',
       fontFamily: '"TF Funky Fusion Demo", cursive',
       color: '#faca79',
       backgroundColor: '#dd5342',
-      padding: { x: 40, y: 20 }
+      padding: { x: 50, y: 25 }
     }).setOrigin(0.5)
       .setInteractive({ useHandCursor: true })
       .on('pointerdown', () => {
@@ -86,22 +100,24 @@ export default class MainMenu extends Phaser.Scene {
       });
     });
 
-    // Pulse effect
-    this.tweens.add({
-      targets: playButton,
-      scale: 1.05,
-      duration: 800,
-      yoyo: true,
-      repeat: -1
-    });
+    // Pulse effect (disabled on mobile to prevent hitbox issues)
+    if (!isMobile) {
+      this.tweens.add({
+        targets: playButton,
+        scale: 1.05,
+        duration: 800,
+        yoyo: true,
+        repeat: -1
+      });
+    }
 
     // Leaderboard button
-    const leaderboardButton = this.add.text(width / 2, height * 2 / 3 + 130, 'LEADERBOARD', {
-      fontSize: '24px',
+    const leaderboardButton = this.add.text(width / 2, leaderboardButtonY, 'LEADERBOARD', {
+      fontSize: '48px',
       fontFamily: '"TF Funky Fusion Demo", cursive',
       color: '#faca79',
       backgroundColor: '#dd5342',
-      padding: { x: 24, y: 14 }
+      padding: { x: 40, y: 22 }
     }).setOrigin(0.5)
       .setInteractive({ useHandCursor: true })
       .on('pointerdown', () => {
@@ -123,12 +139,12 @@ export default class MainMenu extends Phaser.Scene {
     });
 
     // Change name button (under PLAY and LEADERBOARD buttons)
-    const changeNameButton = this.add.text(width / 2, height * 2 / 3 + 200, 'CHANGE NAME', {
-      fontSize: '12px',
-      fontFamily: '"Press Start 2P", monospace',
+    const changeNameButton = this.add.text(width / 2, changeNameButtonY, 'CHANGE NAME', {
+      fontSize: '38px',
+      fontFamily: '"TF Funky Fusion Demo", cursive',
       color: '#faca79',
       backgroundColor: '#dd5342',
-      padding: { x: 16, y: 10 }
+      padding: { x: 35, y: 18 }
     }).setOrigin(0.5)
       .setInteractive({ useHandCursor: true })
       .on('pointerdown', () => {
@@ -137,15 +153,69 @@ export default class MainMenu extends Phaser.Scene {
 
     // Hover effect for change name button
     changeNameButton.on('pointerover', () => {
-      changeNameButton.setStyle({ backgroundColor: '#f47d59' });
+      changeNameButton.setStyle({
+        backgroundColor: '#f47d59',
+        fontFamily: '"TF Funky Fusion Demo", cursive'
+      });
     });
     changeNameButton.on('pointerout', () => {
-      changeNameButton.setStyle({ backgroundColor: '#dd5342' });
+      changeNameButton.setStyle({
+        backgroundColor: '#dd5342',
+        fontFamily: '"TF Funky Fusion Demo", cursive'
+      });
     });
 
     // Start game on space key
     this.input.keyboard.once('keydown-SPACE', () => {
       this.scene.start('GamePlay');
+    });
+  }
+
+  renderPlayerName(name) {
+    // Clear existing name display
+    this.playerNameContainer.removeAll(true);
+
+    // Parse name into segments with different fonts for letters vs numbers
+    const segments = [];
+    let currentSegment = { text: '', isNumber: false };
+
+    for (let i = 0; i < name.length; i++) {
+      const char = name[i];
+      const isNumber = /[0-9]/.test(char);
+
+      if (i === 0) {
+        currentSegment = { text: char, isNumber };
+      } else if (isNumber === currentSegment.isNumber) {
+        currentSegment.text += char;
+      } else {
+        segments.push(currentSegment);
+        currentSegment = { text: char, isNumber };
+      }
+    }
+    segments.push(currentSegment);
+
+    // Render each segment with appropriate font
+    let totalWidth = 0;
+    const textObjects = [];
+
+    segments.forEach(segment => {
+      const textObj = this.add.text(0, 0, segment.text, {
+        fontSize: '72px',
+        fontFamily: segment.isNumber ? '"Baristo", cursive' : '"TF Funky Fusion Demo", cursive',
+        color: '#f47d59'
+      });
+      textObjects.push({ obj: textObj, width: textObj.width });
+      totalWidth += textObj.width;
+    });
+
+    // Position text objects centered with top alignment
+    let xPos = -totalWidth / 2;
+    textObjects.forEach(({ obj }, index) => {
+      const yOffset = segments[index].isNumber ? -1 : 0; // Move numbers up slightly
+      obj.setPosition(xPos, yOffset);
+      obj.setOrigin(0, 0); // Align from top
+      this.playerNameContainer.add(obj);
+      xPos += obj.width;
     });
   }
 
@@ -234,7 +304,7 @@ export default class MainMenu extends Phaser.Scene {
       if (newName.length > 0) {
         localStorage.setItem('wienerSnakePlayerName', newName);
         this.currentPlayerName = newName;
-        this.playerNameText.setText(newName);
+        this.renderPlayerName(newName);
       }
       document.body.removeChild(overlay);
     };

@@ -9,40 +9,48 @@ export default class GameOver extends Phaser.Scene {
     this.finalScore = data.score || 0;
   }
 
+  preload() {
+    console.log('GameOver preload started');
+    // Load game over banner with cache busting
+    this.load.image('gameOverBanner', '/assets/BANNERS/Game-Over.png?v=' + Date.now());
+
+    this.load.once('complete', () => {
+      console.log('GameOver assets loaded successfully');
+    });
+
+    this.load.once('loaderror', (file) => {
+      console.error('GameOver failed to load:', file.src);
+    });
+  }
+
   create() {
     const { width, height } = this.cameras.main;
 
-    // Retro border decoration
+    // Retro border decoration - adjust for mobile
     const graphics = this.add.graphics();
-    graphics.lineStyle(4, 0xfaca79, 1);
-    graphics.strokeRect(20, 20, width - 40, height - 40);
+    const isMobile = this.sys.game.device.os.android || this.sys.game.device.os.iOS || this.sys.game.device.os.iPad || this.sys.game.device.os.iPhone;
 
-    // Game Over title with shadow
-    this.add.text(width / 2 + 3, height / 3 - 37, 'GAME OVER', {
-      fontSize: '40px',
-      fontFamily: '"Press Start 2P", monospace',
-      color: '#754938'
-    }).setOrigin(0.5);
-    this.add.text(width / 2, height / 3 - 40, 'GAME OVER', {
-      fontSize: '40px',
-      fontFamily: '"Press Start 2P", monospace',
-      color: '#dd5342'
-    }).setOrigin(0.5);
+    if (!isMobile) {
+      const borderThickness = 8;
+      const borderPadding = 20;
+      graphics.lineStyle(borderThickness, 0xfaca79, 1);
+      graphics.strokeRect(borderPadding, borderPadding, width - (borderPadding * 2), height - (borderPadding * 2));
+    }
 
-    // Sad sausage emoji
-    this.add.text(width / 2, height / 3 + 20, '🌭💔', {
-      fontSize: '48px'
-    }).setOrigin(0.5);
+    // Game Over banner image
+    const banner = this.add.image(width / 2, height / 4 + 20, 'gameOverBanner');
+    banner.setOrigin(0.5);
+    banner.setScale(0.85);
 
     // Final score with yellow styling
-    this.add.text(width / 2, height / 2 - 30, 'YOUR SCORE', {
-      fontSize: '16px',
+    this.add.text(width / 2, height / 2 - 40, 'YOUR SCORE', {
+      fontSize: '32px',
       fontFamily: '"Press Start 2P", monospace',
       color: '#faca79'
     }).setOrigin(0.5);
 
-    this.add.text(width / 2, height / 2, `${this.finalScore}`, {
-      fontSize: '32px',
+    this.add.text(width / 2, height / 2 + 10, `${this.finalScore}`, {
+      fontSize: '48px',
       fontFamily: '"Press Start 2P", monospace',
       color: '#faca79'
     }).setOrigin(0.5);
@@ -51,14 +59,14 @@ export default class GameOver extends Phaser.Scene {
     const highScore = localStorage.getItem('wienerSnakeHighScore') || 0;
     const isNewHighScore = this.finalScore >= parseInt(highScore);
 
-    this.add.text(width / 2, height / 2 + 50, 'HI-SCORE', {
-      fontSize: '16px',
+    this.add.text(width / 2, height / 2 + 75, 'HI-SCORE', {
+      fontSize: '32px',
       fontFamily: '"Press Start 2P", monospace',
       color: '#faca79'
     }).setOrigin(0.5);
 
-    this.add.text(width / 2, height / 2 + 80, `${highScore}`, {
-      fontSize: '24px',
+    this.add.text(width / 2, height / 2 + 125, `${highScore}`, {
+      fontSize: '36px',
       fontFamily: '"Press Start 2P", monospace',
       color: '#faca79'
     }).setOrigin(0.5);
@@ -82,12 +90,12 @@ export default class GameOver extends Phaser.Scene {
     }
 
     // Restart button with yellow
-    const restartButton = this.add.text(width / 2, height * 2 / 3 + 60, 'RESTART', {
-      fontSize: '20px',
+    const restartButton = this.add.text(width / 2, height * 2 / 3 + 120, 'RESTART', {
+      fontSize: '44px',
       fontFamily: '"Press Start 2P", monospace',
       color: '#faca79',
       backgroundColor: '#dd5342',
-      padding: { x: 24, y: 14 }
+      padding: { x: 50, y: 26 }
     }).setOrigin(0.5)
       .setInteractive({ useHandCursor: true })
       .on('pointerdown', () => {
@@ -102,22 +110,24 @@ export default class GameOver extends Phaser.Scene {
       restartButton.setStyle({ backgroundColor: '#dd5342' });
     });
 
-    // Pulse effect
-    this.tweens.add({
-      targets: restartButton,
-      scale: 1.05,
-      duration: 800,
-      yoyo: true,
-      repeat: -1
-    });
+    // Pulse effect (disabled on mobile to prevent hitbox issues)
+    if (!isMobile) {
+      this.tweens.add({
+        targets: restartButton,
+        scale: 1.05,
+        duration: 800,
+        yoyo: true,
+        repeat: -1
+      });
+    }
 
     // Menu button with yellow
-    const menuButton = this.add.text(width / 2, height * 2 / 3 + 120, 'MENU', {
-      fontSize: '16px',
+    const menuButton = this.add.text(width / 2, height * 2 / 3 + 240, 'MENU', {
+      fontSize: '38px',
       fontFamily: '"Press Start 2P", monospace',
       color: '#faca79',
       backgroundColor: '#dd5342',
-      padding: { x: 20, y: 12 }
+      padding: { x: 44, y: 24 }
     }).setOrigin(0.5)
       .setInteractive({ useHandCursor: true })
       .on('pointerdown', () => {

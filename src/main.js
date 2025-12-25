@@ -6,24 +6,16 @@ import Leaderboard from './scenes/Leaderboard';
 
 const config = {
   type: Phaser.AUTO,
-  width: 640,
-  height: 800,
+  width: 720,
+  height: 1280,
   parent: 'game-container',
   backgroundColor: '#754938',
   pixelArt: true,
   scale: {
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH,
-    width: 640,
-    height: 800,
-    min: {
-      width: 320,
-      height: 400
-    },
-    max: {
-      width: 1280,
-      height: 1600
-    }
+    width: 720,
+    height: 1280
   },
   physics: {
     default: 'arcade',

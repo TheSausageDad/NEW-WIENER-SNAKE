@@ -9,10 +9,16 @@ export default class Leaderboard extends Phaser.Scene {
   async create() {
     const { width, height } = this.cameras.main;
 
-    // Retro border decoration
+    // Retro border decoration - adjust for mobile
     const graphics = this.add.graphics();
-    graphics.lineStyle(4, 0xfaca79, 1);
-    graphics.strokeRect(20, 20, width - 40, height - 40);
+    const isMobile = this.sys.game.device.os.android || this.sys.game.device.os.iOS || this.sys.game.device.os.iPad || this.sys.game.device.os.iPhone;
+
+    if (!isMobile) {
+      const borderThickness = 8;
+      const borderPadding = 20;
+      graphics.lineStyle(borderThickness, 0xfaca79, 1);
+      graphics.strokeRect(borderPadding, borderPadding, width - (borderPadding * 2), height - (borderPadding * 2));
+    }
 
     // Title
     this.add.text(width / 2, 60, 'LEADERBOARD', {

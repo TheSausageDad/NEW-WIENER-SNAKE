@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code - Wiener Snake</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background: #754938;
+            font-family: 'Arial', sans-serif;
+            color: #faca79;
+        }
+        .container {
+            text-align: center;
+            background: #dd5342;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+        }
+        h1 {
+            margin-top: 0;
+            font-size: 32px;
+        }
+        .qr-code {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            display: inline-block;
+            margin: 20px 0;
+        }
+        .url {
+            font-size: 18px;
+            font-weight: bold;
+            margin: 20px 0;
+            word-break: break-all;
+        }
+        .instructions {
+            font-size: 14px;
+            margin-top: 20px;
+            max-width: 400px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌭 Wiener Snake Mobile Access</h1>
+        <div class="qr-code">
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=http://192.168.1.171:5173/" alt="QR Code">
+        </div>
+        <div class="url">http://192.168.1.171:5173/</div>
+        <div class="instructions">
+            Scan this QR code with your mobile device to play Wiener Snake!<br>
+            Make sure your phone is on the same WiFi network.
+        </div>
+    </div>
+</body>
+</html>

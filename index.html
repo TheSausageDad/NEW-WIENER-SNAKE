@@ -47,40 +47,49 @@
       }
 
       #game-container {
-        box-shadow: 0 0 30px rgba(0, 0, 0, 0.8);
-        outline: 24px solid #dd5342;
-        outline-offset: 0;
         image-rendering: pixelated;
         image-rendering: crisp-edges;
-        width: 100%;
-        height: 100%;
-        max-width: 640px;
-        max-height: 800px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
+        position: relative;
       }
 
       #game-container canvas {
         display: block;
-        width: 100% !important;
-        height: 100% !important;
-        object-fit: contain;
+        border: 24px solid #dd5342;
+        box-sizing: border-box;
+        box-shadow: 0 0 30px rgba(0, 0, 0, 0.8);
       }
 
       @media (max-width: 768px), (max-height: 820px) {
+        body {
+          padding: 0;
+          margin: 0;
+          background: #754938; /* Match game background */
+        }
+
         #game-container {
-          outline-width: 12px;
           max-width: 100vw;
           max-height: 100vh;
           max-height: 100dvh; /* Dynamic viewport height for mobile */
+          width: 100vw;
+          height: 100vh;
+          height: 100dvh;
+          border: none; /* No border on mobile */
+          box-sizing: border-box;
+        }
+
+        #game-container canvas {
+          border-width: 0px; /* No red border on mobile */
+          max-width: 100% !important;
+          max-height: 100% !important;
         }
       }
 
       @media (orientation: landscape) and (max-height: 600px) {
         #game-container {
-          max-height: 95vh;
-          max-height: 95dvh;
+          max-height: 100vh;
+          max-height: 100dvh;
+          height: 100vh;
+          height: 100dvh;
         }
       }
     </style>
