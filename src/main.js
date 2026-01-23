@@ -1,21 +1,18 @@
-import Phaser from 'phaser';
 import MainMenu from './scenes/MainMenu';
 import GamePlay from './scenes/GamePlay';
-import GameOver from './scenes/GameOver';
-import Leaderboard from './scenes/Leaderboard';
 
 const config = {
   type: Phaser.AUTO,
-  width: 720,
-  height: 1280,
+  width: 600,
+  height: 600,
   parent: 'game-container',
   backgroundColor: '#754938',
   pixelArt: true,
   scale: {
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH,
-    width: 720,
-    height: 1280
+    width: 600,
+    height: 600
   },
   physics: {
     default: 'arcade',
@@ -24,7 +21,21 @@ const config = {
       debug: false
     }
   },
-  scene: [MainMenu, GamePlay, GameOver, Leaderboard]
+  scene: [MainMenu, GamePlay]
 };
 
 const game = new Phaser.Game(config);
+
+// Listen for play_again event from Farcade SDK
+if (window.FarcadeSDK) {
+  window.FarcadeSDK.singlePlayer.on('play_again', () => {
+    const activeScene = game.scene.getScenes(true)[0];
+    if (activeScene) {
+      activeScene.scene.start('GamePlay');
+    }
+  });
+
+  window.FarcadeSDK.singlePlayer.on('toggle_mute', (data) => {
+    game.sound.mute = data.isMuted;
+  });
+}
