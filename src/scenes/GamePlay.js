@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { supabase } from '../supabaseClient';
+import { addPlayFunPoints, savePlayFunPoints } from '../playfun.js';
 
 export default class GamePlay extends Phaser.Scene {
   constructor() {
@@ -319,6 +320,7 @@ export default class GamePlay extends Phaser.Scene {
       this.score += 10;
       this.scoreText.setText('SCORE: ' + this.score);
       this.spawnFood();
+      addPlayFunPoints(10);
 
       // Flash effect when eating (retro colors)
       this.cameras.main.flash(100, 250, 202, 121);
@@ -471,6 +473,7 @@ export default class GamePlay extends Phaser.Scene {
     this.gameOver = true;
 
     console.log('Game Over! Score:', this.score);
+    savePlayFunPoints();
 
     // Shake camera immediately for fluid feel
     this.cameras.main.shake(200, 0.01);

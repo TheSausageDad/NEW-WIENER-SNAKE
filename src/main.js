@@ -3,6 +3,7 @@ import MainMenu from './scenes/MainMenu';
 import GamePlay from './scenes/GamePlay';
 import GameOver from './scenes/GameOver';
 import Leaderboard from './scenes/Leaderboard';
+import { initPlayFun } from './playfun.js';
 
 const config = {
   type: Phaser.AUTO,
@@ -28,3 +29,5 @@ const config = {
 };
 
 const game = new Phaser.Game(config);
+
+initPlayFun().catch(err => console.warn('Play.fun init failed:', err));
