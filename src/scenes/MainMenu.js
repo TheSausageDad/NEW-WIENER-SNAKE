@@ -4,8 +4,8 @@ export default class MainMenu extends Phaser.Scene {
   }
 
   preload() {
-    // Load banner image from Remix hosted URL
-    this.load.image('banner', 'https://remix.gg/blob/Y5pXWD1Xm1Ux/home-page-banner-i5JY0uEb9l-VR3BN22Nvj7pOjto9bkaKSFkVTFeL1.webp?QQqL');
+    const basePath = import.meta.env.BASE_URL || '/';
+    this.load.image('banner', basePath + 'assets/banner.png');
   }
 
   create() {
@@ -52,9 +52,5 @@ export default class MainMenu extends Phaser.Scene {
       this.scene.start('GamePlay');
     });
 
-    // Call Farcade SDK ready when menu is displayed
-    if (window.FarcadeSDK) {
-      window.FarcadeSDK.singlePlayer.actions.ready();
-    }
   }
 }
