@@ -2,29 +2,15 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.90.0/dist/phaser.min.js"></script>
+    <meta name="x-ogp-key" content="f97c429f-61b9-43c4-89bc-2d2155f8fb8e" />
+    <script src="https://sdk.play.fun/latest"></script>
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <title>NEW-WIENER-SNAKE</title>
-    <meta name="x-ogp-key" content="f97c429f-61b9-43c4-89bc-2d2155f8fb8e" />
-    <script src="https://sdk.play.fun/latest"></script>
     <style>
-      @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
-
-      @font-face {
-        font-family: 'TF Funky Fusion Demo';
-        src: url('/fonts/FunkyFusion.ttf?v=2') format('truetype');
-        font-display: block;
-      }
-
-      @font-face {
-        font-family: 'Baristo';
-        src: url('/fonts/Baristo.ttf') format('truetype');
-        font-display: block;
-      }
-
       * {
         -webkit-tap-highlight-color: transparent;
         -webkit-touch-callout: none;
@@ -39,7 +25,7 @@
         padding: 0;
         overflow: hidden;
         background: #754938;
-        font-family: 'Press Start 2P', monospace;
+        font-family: Arial, sans-serif;
       }
 
       body {
@@ -56,9 +42,6 @@
 
       #game-container canvas {
         display: block;
-        border: 24px solid #dd5342;
-        box-sizing: border-box;
-        box-shadow: 0 0 30px rgba(0, 0, 0, 0.8);
       }
 
       @media (max-width: 768px), (max-height: 820px) {
